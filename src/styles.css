@@ -1,0 +1,720 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@200;400;500;600;700&display=swap");
+
+:root {
+  --page-bg: #e5e7eb;
+  --card-bg: #ffffff;
+  --text-main: #0b0b0f;
+  --text-muted: #8a8a8f;
+  --line-color: #a9a9ad;
+  --brand-green: #16a34a;
+  --shadow-main: 0 3px 0 rgba(0, 0, 0, 0.08), 0 14px 24px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text-main);
+  font-family: "Poppins", sans-serif;
+}
+
+.login-screen {
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: minmax(320px, 760px) 1fr;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.login-screen__visual {
+  position: relative;
+}
+
+.login-screen__visual img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.login-screen__form-section {
+  align-items: center;
+  background: var(--page-bg);
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+  position: relative;
+}
+
+.login-card {
+  background: var(--card-bg);
+  border-radius: 30px;
+  box-shadow: var(--shadow-main);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 350px;
+  min-height: 430px;
+  padding: 22px 20px 16px;
+  width: 100%;
+}
+
+.login-card__brand {
+  margin-top: 6px;
+  text-align: center;
+}
+
+.login-card__brand h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.login-card__brand p {
+  color: #16a34a;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 2px 0 10px;
+}
+
+.login-card__heading {
+  font-size: 19px;
+  font-weight: 300;
+  margin: 4px 0 10px;
+}
+
+.login-card__heading strong {
+  font-weight: 600;
+}
+
+.login-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.login-field-group__label {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.login-field-group input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-color);
+  color: #202020;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 200;
+  outline: none;
+  padding: 4px 0 6px;
+  transition: border-color 0.2s ease;
+}
+
+.login-field-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.login-field-group input:focus {
+  border-color: var(--brand-green);
+}
+
+.login-meta-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.login-checkbox-row {
+  align-items: center;
+  color: #606060;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 300;
+  gap: 8px;
+}
+
+.login-checkbox-row input {
+  accent-color: var(--brand-green);
+  height: 18px;
+  margin: 0;
+  width: 18px;
+}
+
+.login-meta-row a,
+.login-register-link a {
+  color: #606060;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-meta-row a:hover,
+.login-register-link a:hover {
+  color: #384152;
+}
+
+.login-submit-button {
+  background: var(--brand-green);
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  height: 46px;
+  letter-spacing: 0.03em;
+  margin-top: 10px;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.login-submit-button:hover:not(:disabled) {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.login-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-submit-button:disabled {
+  background: #8acfa4;
+  cursor: wait;
+}
+
+.login-register-link {
+  margin: 4px 0 0;
+  text-align: center;
+}
+
+.login-feedback-message {
+  color: var(--text-main);
+  font-size: 14px;
+  margin: 4px 0 0;
+  text-align: center;
+}
+
+.register-screen {
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: minmax(320px, 760px) 1fr;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.register-screen__visual {
+  position: relative;
+}
+
+.register-screen__visual img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.register-screen__form-section {
+  align-items: center;
+  background: var(--page-bg);
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+  position: relative;
+}
+
+.register-card {
+  background: var(--card-bg);
+  border-radius: 30px;
+  box-shadow: var(--shadow-main);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 345px;
+  min-height: 540px;
+  padding: 20px 18px 14px;
+  width: 100%;
+}
+
+.register-card__brand {
+  margin-top: 6px;
+  text-align: center;
+}
+
+.register-card__brand h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.register-card__brand p {
+  color: #16a34a;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 2px 0 8px;
+}
+
+.register-card__heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 4px 0 10px;
+}
+
+.register-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.register-field-group__label {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.register-field-group input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-color);
+  color: #202020;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 200;
+  outline: none;
+  padding: 3px 0 5px;
+  transition: border-color 0.2s ease;
+}
+
+.register-field-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.register-field-group input:focus {
+  border-color: var(--brand-green);
+}
+
+.register-login-link a {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-login-link a:hover {
+  color: #384152;
+}
+
+.register-submit-button {
+  background: var(--brand-green);
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  height: 48px;
+  letter-spacing: 0.03em;
+  margin-top: 10px;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.register-submit-button:hover:not(:disabled) {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.register-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-submit-button:disabled {
+  background: #8acfa4;
+  cursor: wait;
+}
+
+.register-login-link {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 2px 0 0;
+  text-align: center;
+}
+
+.register-feedback-message {
+  color: var(--text-main);
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+.recovery-screen {
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: minmax(320px, 760px) 1fr;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.recovery-screen__visual {
+  position: relative;
+}
+
+.recovery-screen__visual img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.recovery-screen__form-section {
+  align-items: center;
+  background: var(--page-bg);
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+  position: relative;
+}
+
+.recovery-card {
+  background: var(--card-bg);
+  border-radius: 30px;
+  box-shadow: var(--shadow-main);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+  min-height: 430px;
+  padding: 22px 20px 16px;
+  width: 100%;
+}
+
+.recovery-card__brand {
+  margin-top: 6px;
+  text-align: center;
+}
+
+.recovery-card__brand h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.recovery-card__brand p {
+  color: #16a34a;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 2px 0 10px;
+}
+
+.recovery-card__heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.recovery-card__description {
+  color: #606060;
+  font-size: 13px;
+  margin: 0 0 6px;
+  max-width: 296px;
+}
+
+.recovery-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recovery-field-group__label {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.recovery-field-group input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-color);
+  color: #202020;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 200;
+  outline: none;
+  padding: 4px 0 6px;
+  transition: border-color 0.2s ease;
+}
+
+.recovery-field-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.recovery-field-group input:focus {
+  border-color: var(--brand-green);
+}
+
+.recovery-submit-button {
+  background: var(--brand-green);
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  height: 48px;
+  letter-spacing: 0.03em;
+  margin-top: 10px;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.recovery-submit-button:hover:not(:disabled) {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.recovery-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.recovery-submit-button:disabled {
+  background: #8acfa4;
+  cursor: wait;
+}
+
+.recovery-login-link {
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+.recovery-login-link a {
+  color: #606060;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.recovery-login-link a:hover {
+  color: #384152;
+}
+
+.recovery-feedback-message {
+  color: var(--text-main);
+  font-size: 14px;
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .login-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .register-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .recovery-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .login-screen__visual {
+    max-height: 280px;
+  }
+
+  .register-screen__visual {
+    max-height: 280px;
+  }
+
+  .recovery-screen__visual {
+    max-height: 280px;
+  }
+
+  .login-screen__form-section {
+    margin-top: -26px;
+    padding: 0 18px 24px;
+  }
+
+  .register-screen__form-section {
+    margin-top: -26px;
+    padding: 0 18px 24px;
+  }
+
+  .recovery-screen__form-section {
+    margin-top: -26px;
+    padding: 0 18px 24px;
+  }
+
+  .login-card {
+    max-width: 560px;
+    min-height: auto;
+  }
+
+  .register-card {
+    max-width: 560px;
+    min-height: auto;
+  }
+
+  .recovery-card {
+    max-width: 560px;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .login-screen__visual {
+    max-height: 220px;
+  }
+
+  .register-screen__visual {
+    max-height: 220px;
+  }
+
+  .recovery-screen__visual {
+    max-height: 220px;
+  }
+
+  .login-card {
+    border-radius: 24px;
+    gap: 10px;
+    padding: 24px 20px 18px;
+  }
+
+  .login-card__brand h1 {
+    font-size: 30px;
+  }
+
+  .login-card__brand p {
+    font-size: 18px;
+  }
+
+  .login-card__heading {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .login-field-group__label {
+    font-size: 24px;
+  }
+
+  .login-field-group input {
+    font-size: 20px;
+  }
+
+  .login-submit-button {
+    font-size: 24px;
+    height: 52px;
+    margin-top: 12px;
+  }
+
+  .login-meta-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .register-card {
+    border-radius: 24px;
+    gap: 10px;
+    padding: 24px 20px 18px;
+  }
+
+  .register-card__brand h1 {
+    font-size: 30px;
+  }
+
+  .register-card__brand p {
+    font-size: 18px;
+  }
+
+  .register-card__heading {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .register-field-group__label {
+    font-size: 24px;
+  }
+
+  .register-field-group input {
+    font-size: 20px;
+  }
+
+  .register-submit-button {
+    font-size: 26px;
+    height: 56px;
+    margin-top: 14px;
+  }
+
+  .recovery-card {
+    border-radius: 24px;
+    gap: 8px;
+    padding: 24px 20px 18px;
+  }
+
+  .recovery-card__brand h1 {
+    font-size: 30px;
+  }
+
+  .recovery-card__brand p {
+    font-size: 18px;
+  }
+
+  .recovery-card__heading {
+    font-size: 28px;
+  }
+
+  .recovery-card__description {
+    font-size: 14px;
+  }
+
+  .recovery-field-group__label {
+    font-size: 24px;
+  }
+
+  .recovery-field-group input {
+    font-size: 20px;
+  }
+
+  .recovery-submit-button {
+    font-size: 26px;
+    height: 56px;
+    margin-top: 12px;
+  }
+
+  .login-register-link,
+  .login-register-link a,
+  .login-meta-row a,
+  .login-feedback-message,
+  .register-login-link,
+  .register-login-link a,
+  .recovery-login-link a,
+  .recovery-feedback-message,
+  .register-feedback-message {
+    font-size: 16px;
+  }
+}
