@@ -1,11 +1,19 @@
 import { NavLink } from "react-router-dom";
 import { AppIcon } from "./AppIcon";
 
-export function SidebarItem({ to, label, icon, end = false, isCollapsed }) {
+export function SidebarItem({
+  to,
+  label,
+  icon,
+  end = false,
+  isCollapsed,
+  onSelect,
+}) {
   return (
     <NavLink
       to={to}
       end={end}
+      onClick={onSelect}
       className={({ isActive }) =>
         [
           "fg-sidebar-item",

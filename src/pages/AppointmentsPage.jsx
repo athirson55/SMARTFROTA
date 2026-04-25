@@ -1,5 +1,5 @@
 import "../styles/dashboard.css";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "../components/AppLayout";
 import { AppHeader } from "../components/AppHeader";
 import { AppIcon } from "../components/AppIcon";
@@ -114,10 +114,66 @@ function statusClass(status) {
   return "fg-appt-badge-blue";
 }
 
+function formatDate(dateText) {
+  const [year, month, day] = dateText.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+function AppointmentCard({ item }) {
+  return (
+    <article className="fg-appt-mobile-card">
+      <div className="fg-appt-mobile-card-head">
+        <span className="fg-appt-mobile-card-icon">
+          <AppIcon type="truck" />
+        </span>
+        <div className="fg-appt-mobile-card-title">
+          <strong>{item.vehicle}</strong>
+          <small>{item.plate}</small>
+        </div>
+        <span className={`fg-appt-badge ${statusClass(item.status)}`}>
+          {item.status}
+        </span>
+      </div>
+
+      <div className="fg-appt-mobile-card-grid">
+        <div>
+          <span>Tipo</span>
+          <strong>{item.type}</strong>
+        </div>
+        <div>
+          <span>Data</span>
+          <strong>
+            {formatDate(item.date)} • {item.time}
+          </strong>
+        </div>
+        <div>
+          <span>Km previsto</span>
+          <strong>{item.km.toLocaleString("pt-BR")} km</strong>
+        </div>
+        <div>
+          <span>Responsável</span>
+          <strong>{item.owner}</strong>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export function AppointmentsPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("todos");
   const [monthOffset, setMonthOffset] = useState(0);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 900);
+
+  useEffect(() => {
+    function syncViewport() {
+      setIsMobile(window.innerWidth <= 900);
+    }
+
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
+  }, []);
 
   const enriched = useMemo(
     () => scheduleSeed.map((item) => ({ ...item, status: classify(item) })),
@@ -259,62 +315,64 @@ export function AppointmentsPage() {
         </section>
 
         <section className="fg-appt-main-grid">
-          <aside className="fg-appt-calendar-card">
-            <header className="fg-appt-calendar-head">
-              <strong>{monthName}</strong>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setMonthOffset((old) => old - 1)}
-                >
-                  ‹
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMonthOffset((old) => old + 1)}
-                >
-                  ›
-                </button>
-              </div>
-            </header>
-
-            <div className="fg-appt-weekdays">
-              {["D", "S", "T", "Q", "Q", "S", "S"].map((day) => (
-                <span key={day}>{day}</span>
-              ))}
-            </div>
-
-            <div className="fg-appt-days-grid">
-              {days.map((dayObj, index) => (
-                <button
-                  key={`${dayObj.day ?? "x"}-${index}`}
-                  type="button"
-                  className={`
-                    ${dayObj.ghost ? "is-ghost" : ""}
-                    ${dayObj.hasEvent ? "has-event" : ""}
-                  `}
-                  disabled={dayObj.ghost}
-                >
-                  {dayObj.day ?? ""}
-                </button>
-              ))}
-            </div>
-
-            <div className="fg-appt-upcoming">
-              <small>Proximos eventos</small>
-              {upcoming.map((item) => (
-                <div key={item.id}>
-                  <span>{item.type}</span>
-                  <em>
-                    {new Date(item.date).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                    })}
-                  </em>
+          {isMobile ? null : (
+            <aside className="fg-appt-calendar-card">
+              <header className="fg-appt-calendar-head">
+                <strong>{monthName}</strong>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setMonthOffset((old) => old - 1)}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMonthOffset((old) => old + 1)}
+                  >
+                    ›
+                  </button>
                 </div>
-              ))}
-            </div>
-          </aside>
+              </header>
+
+              <div className="fg-appt-weekdays">
+                {["D", "S", "T", "Q", "Q", "S", "S"].map((day) => (
+                  <span key={day}>{day}</span>
+                ))}
+              </div>
+
+              <div className="fg-appt-days-grid">
+                {days.map((dayObj, index) => (
+                  <button
+                    key={`${dayObj.day ?? "x"}-${index}`}
+                    type="button"
+                    className={`
+                      ${dayObj.ghost ? "is-ghost" : ""}
+                      ${dayObj.hasEvent ? "has-event" : ""}
+                    `}
+                    disabled={dayObj.ghost}
+                  >
+                    {dayObj.day ?? ""}
+                  </button>
+                ))}
+              </div>
+
+              <div className="fg-appt-upcoming">
+                <small>Proximos eventos</small>
+                {upcoming.map((item) => (
+                  <div key={item.id}>
+                    <span>{item.type}</span>
+                    <em>
+                      {new Date(item.date).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                      })}
+                    </em>
+                  </div>
+                ))}
+              </div>
+            </aside>
+          )}
 
           <div>
             <section className="fg-appt-toolbar">
@@ -349,51 +407,59 @@ export function AppointmentsPage() {
             </section>
 
             <section className="fg-appt-table-card">
-              <div className="fg-appt-table-wrap">
-                <table className="fg-appt-table">
-                  <thead>
-                    <tr>
-                      <th>Veiculo</th>
-                      <th>Tipo</th>
-                      <th>Data</th>
-                      <th>Km previsto</th>
-                      <th>Status</th>
-                      <th>Responsavel</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((item) => (
-                      <tr key={item.id}>
-                        <td>
-                          <div className="fg-appt-vehicle-cell">
-                            <span>
-                              <AppIcon type="truck" />
-                            </span>
-                            <div>
-                              <strong>{item.vehicle}</strong>
-                              <small>{item.plate}</small>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{item.type}</td>
-                        <td>
-                          {new Date(item.date).toLocaleDateString("pt-BR")} •{" "}
-                          {item.time}
-                        </td>
-                        <td>{item.km.toLocaleString("pt-BR")} km</td>
-                        <td>
-                          <span
-                            className={`fg-appt-badge ${statusClass(item.status)}`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-                        <td>{item.owner}</td>
+              {isMobile ? (
+                <div className="fg-appt-mobile-list">
+                  {filtered.map((item) => (
+                    <AppointmentCard key={item.id} item={item} />
+                  ))}
+                </div>
+              ) : (
+                <div className="fg-appt-table-wrap">
+                  <table className="fg-appt-table">
+                    <thead>
+                      <tr>
+                        <th>Veiculo</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Km previsto</th>
+                        <th>Status</th>
+                        <th>Responsavel</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filtered.map((item) => (
+                        <tr key={item.id}>
+                          <td>
+                            <div className="fg-appt-vehicle-cell">
+                              <span>
+                                <AppIcon type="truck" />
+                              </span>
+                              <div>
+                                <strong>{item.vehicle}</strong>
+                                <small>{item.plate}</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{item.type}</td>
+                          <td>
+                            {new Date(item.date).toLocaleDateString("pt-BR")} •{" "}
+                            {item.time}
+                          </td>
+                          <td>{item.km.toLocaleString("pt-BR")} km</td>
+                          <td>
+                            <span
+                              className={`fg-appt-badge ${statusClass(item.status)}`}
+                            >
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>{item.owner}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
               {filtered.length === 0 ? (
                 <div className="fg-appt-empty">

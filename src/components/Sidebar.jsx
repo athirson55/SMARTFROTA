@@ -45,7 +45,13 @@ const sidebarItems = [
   },
 ];
 
-export function Sidebar({ isOpen, onMouseEnter, onMouseLeave }) {
+export function Sidebar({
+  isOpen,
+  isMobile = false,
+  onMouseEnter,
+  onMouseLeave,
+  onClose,
+}) {
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -53,6 +59,9 @@ export function Sidebar({ isOpen, onMouseEnter, onMouseLeave }) {
     localStorage.removeItem("smart-frota-remember");
     sessionStorage.removeItem("smart-frota-authenticated");
     sessionStorage.removeItem("smart-frota-remember");
+    if (isMobile) {
+      onClose?.();
+    }
     navigate("/login", { replace: true });
   }
 
@@ -78,7 +87,8 @@ export function Sidebar({ isOpen, onMouseEnter, onMouseLeave }) {
               label={item.label}
               icon={item.icon}
               end={item.end}
-              isCollapsed={!isOpen}
+              isCollapsed={!isOpen && !isMobile}
+              onSelect={isMobile ? onClose : undefined}
             />
           ))}
         </nav>

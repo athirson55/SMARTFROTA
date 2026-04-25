@@ -32,13 +32,26 @@ function useOutsideClick(containerRef, onOutsideClick) {
   }, [containerRef, onOutsideClick]);
 }
 
-export function AppHeader() {
+export function AppHeader({ isMobile = false, onMenuToggle }) {
   const navigate = useNavigate();
   const headerRef = useRef(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    function syncViewportMode() {
+      setIsMobileViewport(window.innerWidth <= 900);
+    }
+
+    syncViewportMode();
+    window.addEventListener("resize", syncViewportMode);
+    return () => window.removeEventListener("resize", syncViewportMode);
+  }, []);
+
+  const mobileMode = isMobile || isMobileViewport;
 
   const searchPool = useMemo(() => buildSearchPool(), []);
 
@@ -111,8 +124,88 @@ export function AppHeader() {
     navigate("/login", { replace: true });
   }
 
+  function handleMenuOpen() {
+    if (onMenuToggle) {
+      onMenuToggle();
+      return;
+    }
+
+    window.dispatchEvent(new Event("smart-frota:open-sidebar"));
+  }
+
   return (
     <header className="fg-home-header" ref={headerRef}>
+      {mobileMode ? (
+        <div className="fg-home-mobile-header-row">
+          <button
+            type="button"
+            className="fg-home-icon-btn fg-mobile-menu-btn"
+            aria-label="Abrir menu"
+            onClick={handleMenuOpen}
+          >
+            <AppIcon type="menu" />
+          </button>
+
+          <div className="fg-home-mobile-brand" aria-hidden="true">
+            <span className="fg-home-brand-icon">
+              <AppIcon type="truck" />
+            </span>
+            <strong>Smart Frota</strong>
+          </div>
+
+          <button
+            type="button"
+            className="fg-home-icon-btn"
+            aria-label="Perfil"
+            title="Perfil"
+            aria-expanded={isProfileOpen}
+            onClick={() => {
+              setIsProfileOpen((value) => !value);
+              setIsNotificationOpen(false);
+            }}
+          >
+            <AppIcon type="users" />
+          </button>
+
+          {isProfileOpen ? (
+            <div className="fg-header-dropdown fg-header-profile-dropdown">
+              <button
+                type="button"
+                className="fg-header-dropdown-item"
+                onClick={() => {
+                  navigate("/motoristas");
+                  setIsProfileOpen(false);
+                }}
+              >
+                <strong>Ver perfil</strong>
+                <span>Dados do usuário e permissões</span>
+              </button>
+
+              <button
+                type="button"
+                className="fg-header-dropdown-item"
+                onClick={() => {
+                  navigate("/configuracoes");
+                  setIsProfileOpen(false);
+                }}
+              >
+                <strong>Configurações</strong>
+                <span>Preferências do sistema</span>
+              </button>
+
+              <button
+                type="button"
+                className="fg-header-dropdown-item is-danger"
+                onClick={handleLogout}
+              >
+                <strong>Sair</strong>
+                <span>Encerrar sessão atual</span>
+              </button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="fg-home-header-left">
         <form className="fg-home-search-wrap" onSubmit={handleSearchSubmit}>
           <label className="fg-home-search" htmlFor="global-search">
