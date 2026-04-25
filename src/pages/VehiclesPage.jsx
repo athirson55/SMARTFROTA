@@ -1,0 +1,276 @@
+import "../styles/dashboard.css";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppIcon } from "../components/AppIcon";
+import { AppHeader } from "../components/AppHeader";
+import { AppLayout } from "../components/AppLayout";
+import { fleetVehicles } from "../data/fleetDashboard";
+
+const vehicleSpecsById = {
+  "V-1023": { km: 87420, capacity: "6.5 ton", type: "Caminhão pesado" },
+  "V-1048": { km: 124300, capacity: "12 ton", type: "Caminhão pesado" },
+  "V-1091": { km: 63800, capacity: "7 ton", type: "Caminhão médio" },
+  "V-1120": { km: 56200, capacity: "5 ton", type: "Caminhão leve" },
+  "V-1184": { km: 91540, capacity: "18 ton", type: "Caminhão pesado" },
+  "V-1210": { km: 44110, capacity: "16 ton", type: "Caminhão pesado" },
+  "V-1236": { km: 118760, capacity: "14 ton", type: "Caminhão pesado" },
+  "V-1261": { km: 38940, capacity: "25 ton", type: "Caminhão extrapesado" },
+};
+
+function getCardTone(vehicle) {
+  if (vehicle.status === "Em manutenção") {
+    return "red";
+  }
+
+  if (vehicle.pendencies.length > 0) {
+    return "amber";
+  }
+
+  return "green";
+}
+
+function getStatusBadgeClass(vehicle) {
+  if (vehicle.status === "Em manutenção") {
+    return "fg-vehicles-badge-red";
+  }
+
+  if (vehicle.status === "Em rota") {
+    return "fg-vehicles-badge-blue";
+  }
+
+  if (vehicle.status === "Reserva") {
+    return "fg-vehicles-badge-purple";
+  }
+
+  if (vehicle.pendencies.length === 0) {
+    return "fg-vehicles-badge-green";
+  }
+
+  return "fg-vehicles-badge-blue";
+}
+
+export function VehiclesPage() {
+  const navigate = useNavigate();
+  const [activeFilter, setActiveFilter] = useState("Todos");
+  const [query, setQuery] = useState("");
+
+  const vehicles = useMemo(() => {
+    return fleetVehicles.map((vehicle) => ({
+      ...vehicle,
+      specs: vehicleSpecsById[vehicle.id] ?? {
+        km: 0,
+        capacity: "-",
+        type: "Caminhão",
+      },
+    }));
+  }, []);
+
+  const filterCounters = useMemo(() => {
+    const all = vehicles.length;
+    const active = vehicles.filter(
+      (vehicle) => vehicle.status === "Ativo",
+    ).length;
+    const withPending = vehicles.filter(
+      (vehicle) => vehicle.pendencies.length > 0,
+    ).length;
+    const inMaintenance = vehicles.filter(
+      (vehicle) => vehicle.status === "Em manutenção",
+    ).length;
+    const available = vehicles.filter(
+      (vehicle) =>
+        vehicle.pendencies.length === 0 && vehicle.status !== "Em manutenção",
+    ).length;
+
+    return {
+      Todos: all,
+      Ativos: active,
+      "Com Pendências": withPending,
+      "Em Manutenção": inMaintenance,
+      Disponíveis: available,
+    };
+  }, [vehicles]);
+
+  const filteredVehicles = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return vehicles.filter((vehicle) => {
+      const matchFilter =
+        activeFilter === "Todos" ||
+        (activeFilter === "Ativos" && vehicle.status === "Ativo") ||
+        (activeFilter === "Com Pendências" && vehicle.pendencies.length > 0) ||
+        (activeFilter === "Em Manutenção" &&
+          vehicle.status === "Em manutenção") ||
+        (activeFilter === "Disponíveis" &&
+          vehicle.pendencies.length === 0 &&
+          vehicle.status !== "Em manutenção");
+
+      const matchQuery =
+        normalizedQuery.length === 0 ||
+        [vehicle.id, vehicle.model, vehicle.plate, vehicle.driver]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery);
+
+      return matchFilter && matchQuery;
+    });
+  }, [activeFilter, query, vehicles]);
+
+  return (
+    <AppLayout>
+      <AppHeader />
+
+      <div className="fg-home-content fg-vehicles-content">
+        <section className="fg-vehicles-top-panel">
+          <div className="fg-vehicles-top-head">
+            <h3>
+              Todos os Veículos
+              <span className="fg-vehicles-subtitle">
+                {" "}
+                - {filteredVehicles.length} encontrados
+              </span>
+            </h3>
+
+            <div className="fg-vehicles-top-actions">
+              <div className="fg-vehicles-view-switch">
+                <button type="button" aria-label="Visualização em grade">
+                  <AppIcon type="grid" />
+                </button>
+                <button type="button" aria-label="Visualização em lista">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z" />
+                  </svg>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="fg-home-new-btn"
+                onClick={() => navigate("/agendamentos")}
+              >
+                <span>+</span> Cadastrar Veículo
+              </button>
+            </div>
+          </div>
+
+          <div className="fg-vehicles-toolbar">
+            <div className="fg-vehicles-search-wrap">
+              <span className="fg-vehicles-search-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="6" />
+                  <path d="M16 16l4 4" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Buscar veículo, placa ou motorista"
+              />
+            </div>
+          </div>
+
+          <div
+            className="fg-vehicles-filter-bar"
+            role="tablist"
+            aria-label="Filtros de veículos"
+          >
+            {Object.keys(filterCounters).map((filterName) => (
+              <button
+                key={filterName}
+                type="button"
+                role="tab"
+                aria-selected={activeFilter === filterName}
+                className={activeFilter === filterName ? "is-active" : ""}
+                onClick={() => setActiveFilter(filterName)}
+              >
+                <span>{filterName}</span>
+                <em>{filterCounters[filterName]}</em>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="fg-vehicles-grid">
+          {filteredVehicles.map((vehicle) => {
+            const tone = getCardTone(vehicle);
+            const firstPending = vehicle.pendencies[0];
+            const navigateTo = firstPending
+              ? `/pendencias/${vehicle.id}/${firstPending.slug}`
+              : `/veiculos`;
+
+            return (
+              <article
+                key={vehicle.id}
+                className={`fg-vehicle-card is-${tone}`}
+                onClick={() => navigate(navigateTo)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    navigate(navigateTo);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="fg-vehicle-card-head">
+                  <span className={`fg-vehicle-icon is-${tone}`}>
+                    <AppIcon type="truck" />
+                  </span>
+
+                  <div className="fg-vehicle-head-meta">
+                    <h4>{vehicle.model}</h4>
+                    <p>{vehicle.plate}</p>
+                  </div>
+
+                  <span
+                    className={`fg-vehicle-status ${getStatusBadgeClass(vehicle)}`}
+                  >
+                    {vehicle.status}
+                  </span>
+                </div>
+
+                <div className="fg-vehicle-specs">
+                  <div>
+                    <small>Km atual</small>
+                    <strong>{vehicle.specs.km.toLocaleString("pt-BR")}</strong>
+                  </div>
+                  <div>
+                    <small>Capacidade</small>
+                    <strong>{vehicle.specs.capacity}</strong>
+                  </div>
+                  <div>
+                    <small>Motorista</small>
+                    <strong>{vehicle.driver}</strong>
+                  </div>
+                </div>
+
+                {vehicle.pendencies.length > 0 ? (
+                  <div className="fg-vehicle-pending-list">
+                    {vehicle.pendencies.map((pending) => (
+                      <button
+                        key={`${vehicle.id}-${pending.slug}-${pending.label}`}
+                        type="button"
+                        className={`fg-vehicle-pending-item is-${pending.tone}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate(`/pendencias/${vehicle.id}/${pending.slug}`);
+                        }}
+                      >
+                        <span>{pending.label}</span>
+                        <small>{pending.detail}</small>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="fg-vehicle-ok">
+                    Sem pendências - tudo em dia
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </section>
+      </div>
+    </AppLayout>
+  );
+}

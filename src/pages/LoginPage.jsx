@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginRequest } from "../services/auth";
 import truckImage from "../../ASSETS/caminhão.avif";
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepConnected, setKeepConnected] = useState(false);
@@ -22,7 +23,15 @@ export function LoginPage() {
         keepConnected,
       });
 
+      localStorage.setItem("smart-frota-authenticated", "true");
+      if (keepConnected) {
+        localStorage.setItem("smart-frota-remember", "true");
+      } else {
+        localStorage.removeItem("smart-frota-remember");
+      }
+
       setFeedback("Login realizado com sucesso.");
+      navigate("/home");
     } catch (error) {
       const message =
         error?.response?.data?.message ||
