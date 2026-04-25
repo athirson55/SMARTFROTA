@@ -13,7 +13,7 @@ import { AlertsPage } from "./pages/AlertsPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
-export const router = createBrowserRouter([
+const routes = [
   {
     path: "/home",
     element: <HomePage />,
@@ -74,4 +74,8 @@ export const router = createBrowserRouter([
     path: "*",
     element: <Navigate to="/login" replace />,
   },
-]);
+];
+
+export const router = createBrowserRouter(routes, {
+  basename: import.meta.env.BASE_URL,
+});

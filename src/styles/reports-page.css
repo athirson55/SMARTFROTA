@@ -275,6 +275,12 @@
   place-items: center;
 }
 
+.fg-reports-page .kpi-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 .fg-reports-page .kpi-icon.purple {
   background: var(--purple-bg);
   color: var(--purple);
@@ -594,6 +600,12 @@
   background: var(--blue-light);
   display: grid;
   place-items: center;
+}
+
+.fg-reports-page .vc-av svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--blue);
 }
 
 .fg-reports-page .vc-name {

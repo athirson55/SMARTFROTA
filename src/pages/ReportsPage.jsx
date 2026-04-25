@@ -158,6 +158,14 @@ function toPieSlicePath(cx, cy, outerR, innerR, startAngle, endAngle) {
   ].join(" ");
 }
 
+function TruckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
+    </svg>
+  );
+}
+
 export function ReportsPage() {
   const [periodo, setPeriodo] = useState("30");
   const [veiculo, setVeiculo] = useState("todos");
@@ -440,7 +448,9 @@ export function ReportsPage() {
           </div>
 
           <div className="kpi-card kg">
-            <div className="kpi-icon green">🚚</div>
+            <div className="kpi-icon green">
+              <TruckIcon />
+            </div>
             <div className="kpi-data">
               <div className="kpi-val is-green">{derived.activeVehicles}</div>
               <div className="kpi-label">Veículos ativos</div>
@@ -816,7 +826,9 @@ export function ReportsPage() {
                     <tr key={item.placa}>
                       <td>
                         <div className="vc">
-                          <div className="vc-av">🚚</div>
+                          <div className="vc-av">
+                            <TruckIcon />
+                          </div>
                           <div>
                             <div className="vc-name">{item.veiculo}</div>
                             <div className="vc-plate">{item.placa}</div>
