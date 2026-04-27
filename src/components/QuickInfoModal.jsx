@@ -68,10 +68,17 @@ export function QuickInfoModal({
             const normalizedItem =
               typeof item === "string"
                 ? { title: item, subtitle: "" }
-                : { title: item.title, subtitle: item.subtitle ?? "" };
+                : {
+                    id: item.id,
+                    title: item.title,
+                    subtitle: item.subtitle ?? "",
+                  };
+
+            const itemKey =
+              normalizedItem.id ?? `${normalizedItem.title}-${index}`;
 
             return (
-              <li key={`${normalizedItem.title}-${index}`}>
+              <li key={itemKey}>
                 <strong>{normalizedItem.title}</strong>
                 {normalizedItem.subtitle ? (
                   <p>{normalizedItem.subtitle}</p>

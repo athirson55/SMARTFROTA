@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppIcon } from "./AppIcon";
 import { SidebarItem } from "./SidebarItem";
+import { useAuth } from "../context/AuthContext";
 
 const sidebarItems = [
   { key: "home", label: "Home", icon: "home", to: "/home", end: true },
@@ -53,12 +54,10 @@ export function Sidebar({
   onClose,
 }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   function handleLogout() {
-    localStorage.removeItem("smart-frota-authenticated");
-    localStorage.removeItem("smart-frota-remember");
-    sessionStorage.removeItem("smart-frota-authenticated");
-    sessionStorage.removeItem("smart-frota-remember");
+    logout();
     if (isMobile) {
       onClose?.();
     }

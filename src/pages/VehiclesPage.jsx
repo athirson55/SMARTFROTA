@@ -1,10 +1,12 @@
 import "../styles/dashboard.css";
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppIcon } from "../components/AppIcon";
 import { AppHeader } from "../components/AppHeader";
 import { AppLayout } from "../components/AppLayout";
-import { fleetVehicles } from "../data/fleetDashboard";
+import { EmptyState } from "../components/ui/EmptyState";
+import { vehiclesData } from "../data/vehicles";
+import { useUiFeedback } from "../context/UiFeedbackContext";
 
 const vehicleSpecsById = {
   "V-1023": { km: 87420, capacity: "6.5 ton", type: "Caminhão pesado" },
@@ -51,11 +53,37 @@ function getStatusBadgeClass(vehicle) {
 
 export function VehiclesPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { showSuccess, showInfo } = useUiFeedback();
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    const routeSearch = searchParams.get("search") ?? "";
+    setQuery(routeSearch);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const normalized = query.trim();
+
+    if (!normalized) {
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        next.delete("search");
+        return next;
+      });
+      return;
+    }
+
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.set("search", normalized);
+      return next;
+    });
+  }, [query, setSearchParams]);
 
   const vehicles = useMemo(() => {
-    return fleetVehicles.map((vehicle) => ({
+    return vehiclesData.map((vehicle) => ({
       ...vehicle,
       specs: vehicleSpecsById[vehicle.id] ?? {
         km: 0,
@@ -145,7 +173,10 @@ export function VehiclesPage() {
               <button
                 type="button"
                 className="fg-home-new-btn"
-                onClick={() => navigate("/agendamentos")}
+                onClick={() => {
+                  showInfo("Redirecionando para novo agendamento de manutenção");
+                  navigate("/agendamentos");
+                }}
               >
                 <span>+</span> Cadastrar Veículo
               </button>
@@ -167,6 +198,17 @@ export function VehiclesPage() {
                 placeholder="Buscar veículo, placa ou motorista"
               />
             </div>
+
+            <button
+              type="button"
+              className="fg-home-filter-btn"
+              onClick={() => {
+                showInfo("Abrindo agenda para manutenção");
+                navigate("/agendamentos");
+              }}
+            >
+              Agendar manutenção
+            </button>
           </div>
 
           <div
@@ -253,6 +295,7 @@ export function VehiclesPage() {
                         className={`fg-vehicle-pending-item is-${pending.tone}`}
                         onClick={(event) => {
                           event.stopPropagation();
+                          showSuccess("Pendência selecionada");
                           navigate(`/pendencias/${vehicle.id}/${pending.slug}`);
                         }}
                       >
@@ -269,6 +312,15 @@ export function VehiclesPage() {
               </article>
             );
           })}
+
+          {filteredVehicles.length === 0 ? (
+            <EmptyState
+              title="Nenhum veículo cadastrado"
+              description="Ajuste os filtros ou adicione um novo veículo para começar."
+              actionLabel="Adicionar veículo"
+              onAction={() => navigate("/agendamentos")}
+            />
+          ) : null}
         </section>
       </div>
     </AppLayout>

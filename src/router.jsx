@@ -12,8 +12,9 @@ import { AppointmentsPage } from "./pages/AppointmentsPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { GuestOnlyRoute, ProtectedRoute } from "./components/RouteGuards";
 
-const routes = [
+const privateRoutes = [
   {
     path: "/home",
     element: <HomePage />,
@@ -54,17 +55,36 @@ const routes = [
     path: "/configuracoes",
     element: <SettingsPage />,
   },
+];
+
+const routes = [
+  ...privateRoutes.map((route) => ({
+    ...route,
+    element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+  })),
   {
     path: "/login",
-    element: <LoginPage />,
+    element: (
+      <GuestOnlyRoute>
+        <LoginPage />
+      </GuestOnlyRoute>
+    ),
   },
   {
     path: "/cadastro",
-    element: <CadastroPage />,
+    element: (
+      <GuestOnlyRoute>
+        <CadastroPage />
+      </GuestOnlyRoute>
+    ),
   },
   {
     path: "/recuperar-senha",
-    element: <RecoverPasswordPage />,
+    element: (
+      <GuestOnlyRoute>
+        <RecoverPasswordPage />
+      </GuestOnlyRoute>
+    ),
   },
   {
     path: "/",

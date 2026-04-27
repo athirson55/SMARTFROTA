@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginRequest } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
+import { useUiFeedback } from "../context/UiFeedbackContext";
 import truckImage from "../../ASSETS/caminhão.avif";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { showLoading, hideLoading, showSuccess, showError } = useUiFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepConnected, setKeepConnected] = useState(false);
@@ -15,6 +19,7 @@ export function LoginPage() {
     event.preventDefault();
     setFeedback("");
     setIsLoading(true);
+    showLoading("Carregando...");
 
     try {
       await loginRequest({
@@ -23,22 +28,20 @@ export function LoginPage() {
         keepConnected,
       });
 
-      localStorage.setItem("smart-frota-authenticated", "true");
-      if (keepConnected) {
-        localStorage.setItem("smart-frota-remember", "true");
-      } else {
-        localStorage.removeItem("smart-frota-remember");
-      }
+      login({ keepConnected });
 
       setFeedback("Login realizado com sucesso.");
+      showSuccess("Login realizado com sucesso");
       navigate("/home");
     } catch (error) {
       const message =
         error?.response?.data?.message ||
         "Não foi possível autenticar. Verifique os dados e tente novamente.";
       setFeedback(message);
+      showError(message);
     } finally {
       setIsLoading(false);
+      hideLoading();
     }
   }
 

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerRequest } from "../services/auth";
+import { useUiFeedback } from "../context/UiFeedbackContext";
 import truckImage from "../../ASSETS/caminhão.avif";
 
 export function CadastroPage() {
+  const { showLoading, hideLoading, showSuccess, showError } = useUiFeedback();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,10 +19,12 @@ export function CadastroPage() {
 
     if (password !== confirmPassword) {
       setFeedback("As senhas não conferem.");
+      showError("As senhas não conferem");
       return;
     }
 
     setIsLoading(true);
+    showLoading("Carregando...");
 
     try {
       await registerRequest({
@@ -30,13 +34,16 @@ export function CadastroPage() {
       });
 
       setFeedback("Conta criada com sucesso.");
+      showSuccess("Conta criada com sucesso");
     } catch (error) {
       const message =
         error?.response?.data?.message ||
         "Não foi possível criar a conta. Verifique os dados e tente novamente.";
       setFeedback(message);
+      showError(message);
     } finally {
       setIsLoading(false);
+      hideLoading();
     }
   }
 

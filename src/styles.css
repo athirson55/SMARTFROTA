@@ -27,6 +27,54 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
+.fg-ui-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.fg-ui-loading-box {
+  min-width: 180px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #d8dde6;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.15);
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.fg-ui-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1201;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #1f2937;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
+}
+
+.fg-ui-toast.is-success {
+  background: #166534;
+}
+
+.fg-ui-toast.is-error {
+  background: #991b1b;
+}
+
+.fg-ui-toast.is-info {
+  background: #1d4ed8;
+}
+
 .login-screen {
   align-items: stretch;
   display: grid;

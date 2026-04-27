@@ -1,27 +1,18 @@
 import { useEffect, useState } from "react";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { Sidebar } from "./Sidebar";
 
 export function AppLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(
-    () => window.innerWidth > 900,
-  );
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 900);
+  const isMobile = useIsMobile(900);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => !isMobile);
 
   useEffect(() => {
-    function syncViewportMode() {
-      const mobileView = window.innerWidth <= 900;
-      setIsMobile(mobileView);
-      setIsSidebarOpen(!mobileView);
-    }
-
-    syncViewportMode();
-    window.addEventListener("resize", syncViewportMode);
-    return () => window.removeEventListener("resize", syncViewportMode);
-  }, []);
+    setIsSidebarOpen(!isMobile);
+  }, [isMobile]);
 
   useEffect(() => {
     function handleOpenSidebar() {
-      if (window.innerWidth <= 900) {
+      if (isMobile) {
         setIsSidebarOpen(true);
       }
     }
@@ -32,7 +23,7 @@ export function AppLayout({ children }) {
         "smart-frota:open-sidebar",
         handleOpenSidebar,
       );
-  }, []);
+  }, [isMobile]);
 
   function openDrawer() {
     if (isMobile) {

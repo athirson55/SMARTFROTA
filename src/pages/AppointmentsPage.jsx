@@ -1,8 +1,10 @@
 import "../styles/dashboard.css";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AppLayout } from "../components/AppLayout";
 import { AppHeader } from "../components/AppHeader";
 import { AppIcon } from "../components/AppIcon";
+import { EmptyState } from "../components/ui/EmptyState";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const scheduleSeed = [
   {
@@ -163,17 +165,7 @@ export function AppointmentsPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("todos");
   const [monthOffset, setMonthOffset] = useState(0);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 900);
-
-  useEffect(() => {
-    function syncViewport() {
-      setIsMobile(window.innerWidth <= 900);
-    }
-
-    syncViewport();
-    window.addEventListener("resize", syncViewport);
-    return () => window.removeEventListener("resize", syncViewport);
-  }, []);
+  const isMobile = useIsMobile(900);
 
   const enriched = useMemo(
     () => scheduleSeed.map((item) => ({ ...item, status: classify(item) })),
@@ -336,8 +328,8 @@ export function AppointmentsPage() {
               </header>
 
               <div className="fg-appt-weekdays">
-                {["D", "S", "T", "Q", "Q", "S", "S"].map((day) => (
-                  <span key={day}>{day}</span>
+                {["D", "S", "T", "Q", "Q", "S", "S"].map((day, index) => (
+                  <span key={`${day}-${index}`}>{day}</span>
                 ))}
               </div>
 
@@ -462,9 +454,12 @@ export function AppointmentsPage() {
               )}
 
               {filtered.length === 0 ? (
-                <div className="fg-appt-empty">
-                  Nenhum agendamento encontrado.
-                </div>
+                <EmptyState
+                  title="Nenhum agendamento encontrado"
+                  description="Ajuste os filtros ou crie um novo agendamento para sua frota."
+                  actionLabel="Novo agendamento"
+                  onAction={() => setActiveFilter("todos")}
+                />
               ) : null}
             </section>
           </div>

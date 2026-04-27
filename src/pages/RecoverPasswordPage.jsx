@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { recoverPasswordRequest } from "../services/auth";
+import { useUiFeedback } from "../context/UiFeedbackContext";
 import truckImage from "../../ASSETS/caminhão.avif";
 
 export function RecoverPasswordPage() {
+  const { showLoading, hideLoading, showSuccess, showError } = useUiFeedback();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -12,17 +14,21 @@ export function RecoverPasswordPage() {
     event.preventDefault();
     setFeedback("");
     setIsLoading(true);
+    showLoading("Carregando...");
 
     try {
       await recoverPasswordRequest({ email });
       setFeedback("Se o e-mail existir, você receberá o link de recuperação.");
+      showSuccess("Solicitação enviada com sucesso");
     } catch (error) {
       const message =
         error?.response?.data?.message ||
         "Não foi possível enviar o link de recuperação. Tente novamente.";
       setFeedback(message);
+      showError(message);
     } finally {
       setIsLoading(false);
+      hideLoading();
     }
   }
 

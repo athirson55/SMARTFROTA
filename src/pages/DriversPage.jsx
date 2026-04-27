@@ -3,113 +3,9 @@ import { useMemo, useState } from "react";
 import { AppLayout } from "../components/AppLayout";
 import { AppHeader } from "../components/AppHeader";
 import { AppIcon } from "../components/AppIcon";
-
-const driversSeed = [
-  {
-    id: "D-001",
-    name: "Raj Kumar",
-    role: "Motorista Sênior",
-    email: "raj.kumar@smartfrota.com",
-    phone: "+55 11 98444-1122",
-    cnh: "05498233411",
-    category: "E",
-    status: "Em rota",
-    vehicle: "V-1023 • Volvo FH 460",
-    initials: "RK",
-    avatarTone: "blue",
-  },
-  {
-    id: "D-002",
-    name: "Suresh Mehta",
-    role: "Motorista",
-    email: "suresh.mehta@smartfrota.com",
-    phone: "+55 11 97711-2211",
-    cnh: "06233492874",
-    category: "D",
-    status: "Em rota",
-    vehicle: "V-1048 • Mercedes Atego",
-    initials: "SM",
-    avatarTone: "green",
-  },
-  {
-    id: "D-003",
-    name: "Arjun Patil",
-    role: "Motorista Sênior",
-    email: "arjun.patil@smartfrota.com",
-    phone: "+55 11 96622-3311",
-    cnh: "07122839410",
-    category: "E",
-    status: "Afastado",
-    vehicle: "Sem veículo",
-    initials: "AP",
-    avatarTone: "red",
-  },
-  {
-    id: "D-004",
-    name: "Vikram Singh",
-    role: "Motorista",
-    email: "vikram.singh@smartfrota.com",
-    phone: "+55 11 98892-1145",
-    cnh: "05811389200",
-    category: "D",
-    status: "Disponível",
-    vehicle: "V-1184 • Scania P360",
-    initials: "VS",
-    avatarTone: "purple",
-  },
-  {
-    id: "D-005",
-    name: "Priya Tiwari",
-    role: "Motorista",
-    email: "priya.tiwari@smartfrota.com",
-    phone: "+55 11 93444-9081",
-    cnh: "04770019824",
-    category: "C",
-    status: "Disponível",
-    vehicle: "V-1210 • Ford Cargo 2429",
-    initials: "PT",
-    avatarTone: "amber",
-  },
-  {
-    id: "D-006",
-    name: "Ankit Das",
-    role: "Motorista Sênior",
-    email: "ankit.das@smartfrota.com",
-    phone: "+55 11 94421-1073",
-    cnh: "06900112457",
-    category: "E",
-    status: "Em rota",
-    vehicle: "V-1261 • MAN TGX 28.440",
-    initials: "AD",
-    avatarTone: "blue",
-  },
-  {
-    id: "D-007",
-    name: "Laura Martins",
-    role: "Motorista",
-    email: "laura.martins@smartfrota.com",
-    phone: "+55 11 95770-1110",
-    cnh: "04355110998",
-    category: "D",
-    status: "Em rota",
-    vehicle: "V-1236 • Volvo VM 330",
-    initials: "LM",
-    avatarTone: "green",
-  },
-  {
-    id: "D-008",
-    name: "Deepak Nair",
-    role: "Motorista",
-    email: "deepak.nair@smartfrota.com",
-    phone: "+55 11 96501-7712",
-    cnh: "07620110357",
-    category: "E",
-    status: "Em rota",
-    vehicle: "V-1091 • Volkswagen Delivery",
-    initials: "DN",
-    avatarTone: "amber",
-  },
-];
+import { EmptyState } from "../components/ui/EmptyState";
+import { driversData } from "../data/drivers";
+import { useUiFeedback } from "../context/UiFeedbackContext";
 
 const filterKeys = ["Todos", "Em rota", "Disponível", "Afastado"];
 
@@ -130,19 +26,20 @@ function statusClass(status) {
 }
 
 export function DriversPage() {
+  const { showInfo, showSuccess } = useUiFeedback();
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [viewMode, setViewMode] = useState("table");
 
   const counters = useMemo(() => {
-    const total = driversSeed.length;
-    const emRota = driversSeed.filter(
+    const total = driversData.length;
+    const emRota = driversData.filter(
       (driver) => driver.status === "Em rota",
     ).length;
-    const disponivel = driversSeed.filter(
+    const disponivel = driversData.filter(
       (driver) => driver.status === "Disponível",
     ).length;
-    const afastado = driversSeed.filter(
+    const afastado = driversData.filter(
       (driver) => driver.status === "Afastado",
     ).length;
 
@@ -157,13 +54,20 @@ export function DriversPage() {
   const filteredDrivers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
-    return driversSeed.filter((driver) => {
+    return driversData.filter((driver) => {
       const matchFilter =
         activeFilter === "Todos" || driver.status === activeFilter;
 
       const matchQuery =
         normalized.length === 0 ||
-        [driver.name, driver.email, driver.phone, driver.cnh, driver.vehicle]
+        [
+          driver.id,
+          driver.name,
+          driver.email,
+          driver.phone,
+          driver.cnh,
+          driver.vehicle,
+        ]
           .join(" ")
           .toLowerCase()
           .includes(normalized);
@@ -183,7 +87,11 @@ export function DriversPage() {
             <p>Visualize, cadastre e gerencie os motoristas da sua frota</p>
           </div>
 
-          <button type="button" className="fg-home-new-btn">
+          <button
+            type="button"
+            className="fg-home-new-btn"
+            onClick={() => showInfo("Fluxo de cadastro iniciado")}
+          >
             <span>+</span> Adicionar Motorista
           </button>
         </section>
@@ -341,12 +249,14 @@ export function DriversPage() {
                           <button
                             type="button"
                             aria-label={`Editar ${driver.name}`}
+                            onClick={() => showInfo(`Editar ${driver.name}`)}
                           >
                             ✎
                           </button>
                           <button
                             type="button"
                             aria-label={`Remover ${driver.name}`}
+                            onClick={() => showSuccess(`${driver.name} removido`)}
                           >
                             ×
                           </button>
@@ -358,9 +268,12 @@ export function DriversPage() {
               </table>
 
               {filteredDrivers.length === 0 ? (
-                <div className="fg-drivers-empty">
-                  Nenhum motorista encontrado.
-                </div>
+                <EmptyState
+                  title="Nenhum motorista encontrado"
+                  description="Refine a busca ou cadastre um novo motorista."
+                  actionLabel="Cadastrar motorista"
+                  onAction={() => showInfo("Fluxo de cadastro iniciado")}
+                />
               ) : null}
             </div>
           </section>
@@ -405,9 +318,12 @@ export function DriversPage() {
             ))}
 
             {filteredDrivers.length === 0 ? (
-              <div className="fg-drivers-empty">
-                Nenhum motorista encontrado.
-              </div>
+              <EmptyState
+                title="Nenhum motorista encontrado"
+                description="Refine a busca ou cadastre um novo motorista."
+                actionLabel="Cadastrar motorista"
+                onAction={() => showInfo("Fluxo de cadastro iniciado")}
+              />
             ) : null}
           </section>
         )}

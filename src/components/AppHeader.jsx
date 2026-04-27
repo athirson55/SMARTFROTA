@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppIcon } from "./AppIcon";
 import { fleetVehicles } from "../data/fleetDashboard";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useAuth } from "../context/AuthContext";
+import { PageBreadcrumb } from "./ui/PageBreadcrumb";
 
 function buildSearchPool() {
   return fleetVehicles.map((vehicle) => ({
@@ -32,25 +35,54 @@ function useOutsideClick(containerRef, onOutsideClick) {
   }, [containerRef, onOutsideClick]);
 }
 
+function ProfileMenu({ navigate, onClose, onLogout }) {
+  return (
+    <div className="fg-header-dropdown fg-header-profile-dropdown">
+      <button
+        type="button"
+        className="fg-header-dropdown-item"
+        onClick={() => {
+          navigate("/motoristas");
+          onClose();
+        }}
+      >
+        <strong>Ver perfil</strong>
+        <span>Dados do usuário e permissões</span>
+      </button>
+
+      <button
+        type="button"
+        className="fg-header-dropdown-item"
+        onClick={() => {
+          navigate("/configuracoes");
+          onClose();
+        }}
+      >
+        <strong>Configurações</strong>
+        <span>Preferências do sistema</span>
+      </button>
+
+      <button
+        type="button"
+        className="fg-header-dropdown-item is-danger"
+        onClick={onLogout}
+      >
+        <strong>Sair</strong>
+        <span>Encerrar sessão atual</span>
+      </button>
+    </div>
+  );
+}
+
 export function AppHeader({ isMobile = false, onMenuToggle }) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const headerRef = useRef(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
-
-  useEffect(() => {
-    function syncViewportMode() {
-      setIsMobileViewport(window.innerWidth <= 900);
-    }
-
-    syncViewportMode();
-    window.addEventListener("resize", syncViewportMode);
-    return () => window.removeEventListener("resize", syncViewportMode);
-  }, []);
-
+  const isMobileViewport = useIsMobile(900);
   const mobileMode = isMobile || isMobileViewport;
 
   const searchPool = useMemo(() => buildSearchPool(), []);
@@ -82,10 +114,12 @@ export function AppHeader({ isMobile = false, onMenuToggle }) {
       .slice(0, 5);
   }, []);
 
-  useOutsideClick(headerRef, () => {
+  const closeHeaderMenus = useCallback(() => {
     setIsNotificationOpen(false);
     setIsProfileOpen(false);
-  });
+  }, []);
+
+  useOutsideClick(headerRef, closeHeaderMenus);
 
   useEffect(() => {
     function handleEscape(event) {
@@ -117,10 +151,7 @@ export function AppHeader({ isMobile = false, onMenuToggle }) {
   }
 
   function handleLogout() {
-    localStorage.removeItem("smart-frota-authenticated");
-    localStorage.removeItem("smart-frota-remember");
-    sessionStorage.removeItem("smart-frota-authenticated");
-    sessionStorage.removeItem("smart-frota-remember");
+    logout();
     navigate("/login", { replace: true });
   }
 
@@ -168,40 +199,11 @@ export function AppHeader({ isMobile = false, onMenuToggle }) {
           </button>
 
           {isProfileOpen ? (
-            <div className="fg-header-dropdown fg-header-profile-dropdown">
-              <button
-                type="button"
-                className="fg-header-dropdown-item"
-                onClick={() => {
-                  navigate("/motoristas");
-                  setIsProfileOpen(false);
-                }}
-              >
-                <strong>Ver perfil</strong>
-                <span>Dados do usuário e permissões</span>
-              </button>
-
-              <button
-                type="button"
-                className="fg-header-dropdown-item"
-                onClick={() => {
-                  navigate("/configuracoes");
-                  setIsProfileOpen(false);
-                }}
-              >
-                <strong>Configurações</strong>
-                <span>Preferências do sistema</span>
-              </button>
-
-              <button
-                type="button"
-                className="fg-header-dropdown-item is-danger"
-                onClick={handleLogout}
-              >
-                <strong>Sair</strong>
-                <span>Encerrar sessão atual</span>
-              </button>
-            </div>
+            <ProfileMenu
+              navigate={navigate}
+              onClose={() => setIsProfileOpen(false)}
+              onLogout={handleLogout}
+            />
           ) : null}
         </div>
       ) : null}
@@ -295,6 +297,11 @@ export function AppHeader({ isMobile = false, onMenuToggle }) {
             }}
           >
             <AppIcon type="bell" />
+            {notificationItems.length > 0 ? (
+              <span className="fg-home-icon-badge">
+                {notificationItems.length}
+              </span>
+            ) : null}
           </button>
 
           {isNotificationOpen ? (
@@ -366,50 +373,23 @@ export function AppHeader({ isMobile = false, onMenuToggle }) {
             <div className="fg-home-user-chip">
               <div className="fg-home-user-avatar">HV</div>
               <div>
-                <strong>Harsh Vani</strong>
-                <p>Operations Manager</p>
+                <strong>{user?.name ?? "Usuário"}</strong>
+                <p>{user?.role ?? "Perfil"}</p>
               </div>
             </div>
           </button>
 
           {isProfileOpen ? (
-            <div className="fg-header-dropdown fg-header-profile-dropdown">
-              <button
-                type="button"
-                className="fg-header-dropdown-item"
-                onClick={() => {
-                  navigate("/motoristas");
-                  setIsProfileOpen(false);
-                }}
-              >
-                <strong>Ver perfil</strong>
-                <span>Dados do usuário e permissões</span>
-              </button>
-
-              <button
-                type="button"
-                className="fg-header-dropdown-item"
-                onClick={() => {
-                  navigate("/configuracoes");
-                  setIsProfileOpen(false);
-                }}
-              >
-                <strong>Configurações</strong>
-                <span>Preferências do sistema</span>
-              </button>
-
-              <button
-                type="button"
-                className="fg-header-dropdown-item is-danger"
-                onClick={handleLogout}
-              >
-                <strong>Sair</strong>
-                <span>Encerrar sessão atual</span>
-              </button>
-            </div>
+            <ProfileMenu
+              navigate={navigate}
+              onClose={() => setIsProfileOpen(false)}
+              onLogout={handleLogout}
+            />
           ) : null}
         </div>
       </div>
+
+      <PageBreadcrumb />
     </header>
   );
 }
