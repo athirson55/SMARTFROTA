@@ -4,32 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Frota | Login</title>
-    <script>
-      (function () {
-        var searchParams = new URLSearchParams(window.location.search);
-        var redirectedPath = searchParams.get("p");
-
-        if (!redirectedPath) {
-          return;
-        }
-
-        searchParams.delete("p");
-        var nextUrl = decodeURIComponent(redirectedPath);
-        var remainingQuery = searchParams.toString();
-        var basePath = "/SMARTFROTA/";
-
-        if (nextUrl.indexOf(basePath) !== 0) {
-          nextUrl =
-            basePath.replace(/\/$/, "") +
-            (nextUrl.charAt(0) === "/" ? nextUrl : "/" + nextUrl);
-        }
-
-        if (remainingQuery) {
-          nextUrl += "?" + remainingQuery;
-        }
-        window.history.replaceState(null, "", nextUrl);
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

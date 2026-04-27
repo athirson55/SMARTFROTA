@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { Navigate, createHashRouter } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { CadastroPage } from "./pages/CadastroPage";
 import { RecoverPasswordPage } from "./pages/RecoverPasswordPage";
@@ -96,6 +96,6 @@ const routes = [
   },
 ];
 
-export const router = createBrowserRouter(routes, {
+export const router = createHashRouter(routes, {
   basename: import.meta.env.BASE_URL,
 });

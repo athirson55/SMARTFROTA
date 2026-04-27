@@ -6,11 +6,20 @@
     <title>Smart Frota</title>
     <script>
       (function () {
-        var path =
-          window.location.pathname +
-          window.location.search +
-          window.location.hash;
-        var target = "/SMARTFROTA/?p=" + encodeURIComponent(path);
+        var path = window.location.pathname.replace(/^\/SMARTFROTA\/?/, "");
+        var search = window.location.search;
+        var hash = window.location.hash;
+        var route = "/SMARTFROTA/#" + (path ? path : "/");
+
+        if (search) {
+          route += search;
+        }
+
+        if (hash) {
+          route += hash;
+        }
+
+        var target = route;
         window.location.replace(target);
       })();
     </script>
